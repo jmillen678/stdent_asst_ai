@@ -1,0 +1,21 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install fastapi uvicorn
+      - name: Run tests
+        run: |
+          for svc in backend/*; do
+            if [ -d "$svc" ]; then
+              pip install -r "$svc/requirements.txt"
+              pytest "$svc/tests" || exit 1
+            fi
+          done
